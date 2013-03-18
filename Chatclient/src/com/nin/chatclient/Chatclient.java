@@ -18,11 +18,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class Chatclient extends Activity {
 	
 	 static BufferedReader fromServer = null;
+	 PrintWriter out=null;
 
 	 private EditText textOut; //write msg  
 	    private TextView textIn; //show received msg  
@@ -35,6 +37,8 @@ public class Chatclient extends Activity {
         private Handler handler = new Handler();
         private String serverIpAddress = "";
         private boolean connected = false;
+     static   TextView tv;
+       static  LinearLayout ll;
 
         int flag=0;
 	    /** Called when the activity is first created. */  
@@ -42,12 +46,14 @@ public class Chatclient extends Activity {
 	    public void onCreate(Bundle savedInstanceState) {  
 	        super.onCreate(savedInstanceState);  
 	        setContentView(R.layout.activity_chatclient);  
+	        LinearLayout ll = (LinearLayout) findViewById(R.id.linear);
 	        ipaddressEdt = (EditText)findViewById(R.id.EditText01);  
 	 //       task = new InternetTask();
 	        textOut = (EditText)findViewById(R.id.msg);  
 	        Button buttonSend = (Button)findViewById(R.id.myButton);  
 	        textIn = (TextView)findViewById(R.id.texin);  
 	        buttonSend.setOnClickListener(buttonSendOnClickListener);  
+	       tv = new TextView(this);
 	    }  
 	  
 	    Button.OnClickListener buttonSendOnClickListener  
@@ -65,6 +71,7 @@ public class Chatclient extends Activity {
 	            }
 	         Thread cThread = new Thread(new ClientThread());
              cThread.start();
+           
 	//        	task.execute();
 	      // 	textOut.setText("");
 	                    
@@ -84,7 +91,7 @@ public class Chatclient extends Activity {
 	                        try {
 	                        	
 	                            Log.d("ClientActivity", "C: Sending command.");
-	                         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket
+	                            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket
 	                                        .getOutputStream())), true);  //write to server
 	                           
 	                           out.println(textOut.getText().toString());
@@ -92,15 +99,28 @@ public class Chatclient extends Activity {
 	                           
 	                           fromServer = new BufferedReader(
 	                   				new InputStreamReader(socket.getInputStream())); //read from server
+	                     /*      tv.setLayoutParams(new LinearLayout.LayoutParams(320,80));
+	               	        tv.setText(fromServer.readLine());
+	               	        ll.addView(tv);*/
 	                           
-	                           textIn.setText(fromServer.readLine());
+	               	    //    System.out.println("fromserver"+fromServer.readLine());
+	               	        final String msgserver=fromServer.readLine();
+	               	     runOnUiThread(new Runnable() {
+
+	               	      @Override
+	               	      public void run() {
+	               	    	textIn.setText(msgserver);
+	               	    	System.out.println("message from server "+msgserver);
+	               	              }
+	               	      }); 		
+	                       //  textIn.setText(msgserver);
 	                           
 	                     /*       dataOutputStream = new DataOutputStream(socket.getOutputStream()); 
 	                            dataOutputStream.writeUTF(textOut.getText().toString());*/ 
 	                     //     dataInputStream = new DataInputStream(socket.getInputStream());  
 	                  //          textIn.setText(dataInputStream.readUTF()+"");
 	                            // where you issue the commands
-	                           connected = false;
+	                          connected = false;
 	                                Log.d("ClientActivity", "C: Sent.");
 	                        } catch (Exception e) {
 	                            Log.e("ClientActivity", "S: Error", e);

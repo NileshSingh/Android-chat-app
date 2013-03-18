@@ -67,6 +67,7 @@ public class Chatserver  {
                     java.util.Scanner sc = new java.util.Scanner(System.in);  
                     
                     out.println(sc.nextLine());
+                 
   
                  //   dataOutputStream.writeUTF(sc.nextLine());//write msg to stream client   
          //           System.out.println("################## message sent to device #########");  
@@ -75,7 +76,7 @@ public class Chatserver  {
        //              str=sc1.nextLine();  
                       
           //      }while(str.equalsIgnoreCase("y"));  
-                         
+                          
         	}
         	
         	catch (IOException e) {  
